@@ -1,18 +1,29 @@
 import React, {useState, useEffect} from 'react'
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Typography } from 'antd';
 import 'antd/dist/antd.css';
-import {loginUser} from "../Actions/userAction"
+import Message from "./Message"
+import {loginUser, registerUser} from "../Actions/userAction"
 import { useDispatch, useSelector } from 'react-redux'
+import {USER_REGISTER_RESET} from "../Constants/userConstants"
 
-const Register = () => {
+const { Title } = Typography;
+
+
+const Register = ({button}) => {
 
 const dispatch = useDispatch()
-const [email, setEmail] = useState("")
-const [password, setPassword] = useState("")
+
+const userRegisterData = useSelector(state => state.userRegister)
+const {user, success: success, loading, error} = userRegisterData
+
+useEffect(() => {
+    dispatch({
+        type: USER_REGISTER_RESET
+    })
+}, [])
 
 const onFinish = (values: any) => {
-    console.log('Success:', values);
-    dispatch(loginUser(values))
+    dispatch(registerUser(values))
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -20,7 +31,12 @@ const onFinish = (values: any) => {
   };
 
   return (
-    <section style={{width:'50%', margin:"0 auto"}}>
+    <section style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", width:'50%', margin:"0 auto"}}>
+    <Title level={2}> Register </Title>
+
+    {error && <Message message={error} type={"error"} />}
+    {success && <Message message={user.message} type={"success"} />}
+
     <Form
       name="basic"
       labelCol={{ span: 8 }}
@@ -33,7 +49,7 @@ const onFinish = (values: any) => {
       <Form.Item
         label="Name"
         name="name"
-        rules={[{ required: true, message: 'Please input your username!' }]}
+        rules={[{ required: true, message: 'Please enter your name' }]}
       >
         <Input />
       </Form.Item>
@@ -41,7 +57,7 @@ const onFinish = (values: any) => {
       <Form.Item
         label="Email"
         name="email"
-        rules={[{ required: true, message: 'Please input your username!' }]}
+        rules={[{ required: true, message: 'Please enter your email!' }]}
       >
         <Input />
       </Form.Item>
@@ -49,7 +65,7 @@ const onFinish = (values: any) => {
       <Form.Item
         label="Password"
         name="password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
+        rules={[{ required: true, message: 'Please enter your password!' }]}
       >
         <Input.Password />
       </Form.Item>
@@ -57,7 +73,7 @@ const onFinish = (values: any) => {
       <Form.Item
         label="Confirm Password"
         name="confirm_password"
-        rules={[{ required: true, message: 'Please input your password!' }]}
+        rules={[{ required: true, message: 'Please confirm your password!' }]}
       >
         <Input.Password />
       </Form.Item>
@@ -66,6 +82,7 @@ const onFinish = (values: any) => {
         <Button type="primary" htmlType="submit">
           Submit
         </Button>
+        {button}
       </Form.Item>
     </Form>
     </section>

@@ -10,17 +10,19 @@ export const loginUser = (loginDetails) => async (dispatch) => {
 
     try{
         const config = {
-            body: {
-                email: loginDetails.username,
-                password: loginDetails.password
-            }
+            'Content-Type': 'application/json',
         }
 
-        const {data} = await axios.post(`/api/login/`, {} , config)
+        const body = {
+            email: loginDetails.username,
+            password: loginDetails.password
+        }
+
+        const {result, message} = await axios.post(`https://superpoweredtodo.herokuapp.com/api/login/`, body , config)
 
         dispatch({
             type: USER_LOGIN_SUCCESS,
-            payload: data
+            payload: {message, ...result}
         })
 
     }
@@ -41,19 +43,22 @@ export const registerUser = (registerDetails) => async (dispatch) => {
 
     try{
         const config = {
-            body: {
-                name: registerDetails.name
-                email: registerDetails.username,
-                password: registerDetails.password
-                confirmPassword: registerDetails.confirm_password
-            }
+            'Content-Type': 'application/json',
         }
 
-        const {data} = await axios.post(`/api/signup`, {} , config)
+        const body = {
+            name: registerDetails.name,
+            email: registerDetails.username,
+            password: registerDetails.password,
+            confirmPassword: registerDetails.confirm_password
+        }
+
+
+        const {result, message} = await axios.post(`https://superpoweredtodo.herokuapp.com/api/signup`, body , config)
 
         dispatch({
             type: USER_REGISTER_SUCCESS,
-            payload: data
+            payload: { message, ...result}
         })
 
     }

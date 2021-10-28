@@ -1,17 +1,24 @@
 import React, {useState, useEffect} from 'react'
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Typography } from 'antd';
 import 'antd/dist/antd.css';
+import Message from "./Message"
 import {loginUser} from "../Actions/userAction"
 import { useDispatch, useSelector } from 'react-redux'
+import {USER_LOGIN_RESET} from "../Constants/userConstants"
 
-const Login = () => {
+
+const { Title } = Typography;
+
+const Login = ({button}) => {
+
+const userLoginData = useSelector(state=> state.userLogin)
+const { user, success, loading, error} = userLoginData
 
 const dispatch = useDispatch()
 const [username, setUsername] = useState("")
 const [password, setPassword] = useState("")
 
 const onFinish = (values: any) => {
-    console.log('Success:', values);
     dispatch(loginUser(values))
   };
 
@@ -19,8 +26,20 @@ const onFinish = (values: any) => {
     console.log('Failed:', errorInfo);
   };
 
+  useEffect(() => {
+    dispatch({
+        type: USER_LOGIN_RESET
+    })
+}, [])
+
   return (
-    <section style={{width:'50%', margin:"0 auto"}}>
+    <section style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", width:'50%', margin:"0 auto"}}>
+
+    <Title level={2}> Login </Title>
+
+    {error && <Message message={error} type={"error"} />}
+    {success && <Message message={user.message} type={"success"} />}
+
     <Form
       name="basic"
       labelCol={{ span: 8 }}
@@ -31,11 +50,11 @@ const onFinish = (values: any) => {
       autoComplete="off"
     >
       <Form.Item
-        label="Username"
-        name="username"
+        label="Email"
+        name="email"
         value={username}
         onChange={(e)=> setUsername(e.target.value)}
-        rules={[{ required: true, message: 'Please input your username!' }]}
+        rules={[{ required: true, message: 'Please enter your email!' }]}
       >
         <Input />
       </Form.Item>
@@ -45,7 +64,7 @@ const onFinish = (values: any) => {
         name="password"
         value={password}
         onChange={(e)=> setPassword(e.target.value)}
-        rules={[{ required: true, message: 'Please input your password!' }]}
+        rules={[{ required: true, message: 'Please enter your password!' }]}
       >
         <Input.Password />
       </Form.Item>
@@ -54,6 +73,7 @@ const onFinish = (values: any) => {
         <Button type="primary" htmlType="submit">
           Submit
         </Button>
+        {button}
       </Form.Item>
     </Form>
     </section>
