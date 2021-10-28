@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import Login from "./Login"
+import { Button } from 'antd';
 import Register from "./Register"
 import { useSelector } from 'react-redux'
 
@@ -28,11 +29,11 @@ const Authentication = () => {
     }
 
     const buttonText = () => {
-        if(stage === "login") return "Register"
-        if(stage === "register") return "Login"
+        if(stage === "login") return "Register?"
+        if(stage === "register") return "Login?"
     }
 
-    const button = <button onClick={toggleStage}> {buttonText()} </button>
+    const button = <Button type="text" onClick={toggleStage}> {buttonText()} </Button>
     return (
         <>
           {stage === "login" && <Login button={button} />}  

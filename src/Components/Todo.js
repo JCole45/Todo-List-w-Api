@@ -2,10 +2,11 @@ import React, {useEffect} from 'react'
 import { Table, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
-import { PlusOutlined, DeleteTwoTone, UploadOutlined} from '@ant-design/icons';
+import { PlusOutlined, DeleteTwoTone, UploadOutlined, UserDeleteOutlined} from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { Typography } from 'antd';
 import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem} from "../Actions/todoActions"
+import {signOutUser} from "../Actions/userAction"
 
 
 const { Paragraph } = Typography;
@@ -93,6 +94,10 @@ const Todo = () => {
 
     }
 
+    const handleSignOut = () => {
+        dispatch(signOutUser())
+    }
+
     return (
         <>
             <div className="input-holder"> 
@@ -100,6 +105,9 @@ const Todo = () => {
                 <Button type="primary" onClick={handleCreateTodo} shape="circle" icon={<PlusOutlined />} size={"large"} />
                 <Button type="primary" onClick={handleUploadTodos} shape="circle" icon={<UploadOutlined />} size={"large"} />
                 <input hidden type="file" onChange={handleUpload} id="upload-btn"/>
+
+                <Button style={{marginLeft:"20px"}} type="primary" onClick={handleSignOut} icon={<UserDeleteOutlined />} size={"small"}> Sign Out</Button>
+
             </div>
             <Table className="table-style" columns={columns} rowKey={record => record._id} dataSource={todos} />
         </>
