@@ -12,7 +12,7 @@ const { Title } = Typography;
 const Login = ({button}) => {
 
 const userLoginData = useSelector(state=> state.userLogin)
-const { user, success, loading, error} = userLoginData
+const { user, success, error} = userLoginData
 
 const dispatch = useDispatch()
 const [username, setUsername] = useState("")

@@ -1,8 +1,5 @@
 import React, {useEffect} from "react"
-import logo from './logo.svg';
 import './App.css';
-import Login from "./Components/Login"
-import Register from "./Components/Register"
 import Todo from "./Components/Todo"
 import Authentcation from "./Components/Authentication"
 import { useDispatch, useSelector } from 'react-redux'

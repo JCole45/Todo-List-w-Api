@@ -21,7 +21,7 @@ export const fetchTodos = (details) => async (dispatch, getState) => {
             },
         }
 
-        const {result, message} = await axios.get(`https://superpoweredtodo.herokuapp.com/api/todo?page=${details.page}&pageSize=${details.pageSize}`, {} , config)
+        const {result} = await axios.get(`https://superpoweredtodo.herokuapp.com/api/todo?page=${details.page}&pageSize=${details.pageSize}`, {} , config)
 
         dispatch({
             type: FETCH_TODO_SUCCESS,
@@ -130,9 +130,9 @@ export const editTodoItem = (text, details) => async (dispatch, getState) => {
         }
 
         const body = {
-            name: text
+            name: text,
             content: "",
-            status: detials.status
+            status: details.status
         }
 
         const {result, message} = await axios.put(`https://superpoweredtodo.herokuapp.com/api/todo/${details._id}`, body , config)

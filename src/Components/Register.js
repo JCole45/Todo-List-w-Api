@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import { Form, Input, Button, Typography } from 'antd';
 import 'antd/dist/antd.css';
 import Message from "./Message"
-import {loginUser, registerUser} from "../Actions/userAction"
+import {registerUser} from "../Actions/userAction"
 import { useDispatch, useSelector } from 'react-redux'
 import {USER_REGISTER_RESET} from "../Constants/userConstants"
 
@@ -14,7 +14,7 @@ const Register = ({button}) => {
 const dispatch = useDispatch()
 
 const userRegisterData = useSelector(state => state.userRegister)
-const {user, success: success, loading, error} = userRegisterData
+const {user, success, error} = userRegisterData
 
 useEffect(() => {
     dispatch({

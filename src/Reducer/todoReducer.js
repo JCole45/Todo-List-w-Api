@@ -1,4 +1,4 @@
-import {CREATE_TODO_REQUEST, CREATE_TODO_SUCCESS, CREATE_TODO_FAIL,FETCH_TODO_REQUEST, FETCH_TODO_SUCCESS, DELETE_TODO_SUCCESS} from "../Constants/todoConstants"
+import {CREATE_TODO_REQUEST, CREATE_TODO_SUCCESS, CREATE_TODO_FAIL, FETCH_TODO_SUCCESS, DELETE_TODO_SUCCESS} from "../Constants/todoConstants"
 
 export const todoReducer = (state={todos:[{_id:'1', name:"John", status:"Active", content:"Todo item"}], loading:false, success:false}, action) => {
     switch(action.type){

@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
-import { Table, Tag, Space } from 'antd';
+import React, {useEffect} from 'react'
+import { Table, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
-import { PlusOutlined, EditTwoTone , DeleteTwoTone, UploadOutlined} from '@ant-design/icons';
+import { PlusOutlined, DeleteTwoTone, UploadOutlined} from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { Typography } from 'antd';
 import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem} from "../Actions/todoActions"
@@ -17,18 +17,14 @@ const Todo = () => {
     const [editId,setEditId] = React.useState("")
     const [file, setFile] = React.useState()
 
-    const handleEdit = (e, record) => {
-        console.log(e,record)
-        setEdit(e)
-        setEditId(record._id)
-    }
-
     const handleDelete = (id) => {
         deleteTodoItem(id)
     }
 
-    const handleEdit = (text, value) => {
+    const handleEdit = (text, record) => {
         editTodoItem(text, record)
+        setEdit(text)
+        setEditId(record._id)
     }
 
     const columns = [
@@ -54,7 +50,7 @@ const Todo = () => {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
-        render: text => <a> {text}</a>
+        render: text => <p> {text}</p>
     },
     {
         title: 'Action',
@@ -62,7 +58,7 @@ const Todo = () => {
         render: (text, record) => (
             <Space size="large">
                 <Tooltip title="Delete todo item">
-                    <DeleteTwoTone onClick={()=> handleDelete(record._id)} size={"large"} color="secondary" className="delete-btn" onClick={()=> console.log(record) }/>
+                    <DeleteTwoTone onClick={()=> handleDelete(record._id)} size={"large"} color="secondary" className="delete-btn" />
                 </Tooltip>
             </Space>
         ),

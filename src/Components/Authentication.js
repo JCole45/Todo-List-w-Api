@@ -1,17 +1,15 @@
 import React, {useState, useEffect} from 'react'
 import Login from "./Login"
 import Register from "./Register"
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 const Authentication = () => {
 
     const [stage, setStage] = useState("login")
 
-    const userLoginData = useSelector(state=> state.userLogin)
-    const { user, success, loading, error} = userLoginData
 
     const userRegisterData = useSelector(state => state.userRegister)
-    const {user: registerUser, success: registerSuccess, loading: registerLoading, error: registerError} = userRegisterData
+    const { success: registerSuccess} = userRegisterData
 
     useEffect(() => {
         if(registerSuccess){
