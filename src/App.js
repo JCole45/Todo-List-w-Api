@@ -7,10 +7,13 @@ import {fetchTodos} from "./Actions/todoActions"
 
 
 function App() {
+  
   const dispatch = useDispatch()
+
   useEffect(() => {
     dispatch(fetchTodos({page:1, pageSize:25}))
   }, [])
+
   const userData = useSelector(state=> state.userLogin)
   const { user } = userData
 
