@@ -50,7 +50,7 @@ export const createTodoItem = (todo) => async (dispatch, getState) => {
     try{
         const config = {
             headers: {
-                Authorization: `Bearer ${authorization}`
+                Authorization: `Bearer ${authorization}`,
             },
         }
 
