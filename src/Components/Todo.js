@@ -102,11 +102,11 @@ const Todo = () => {
         <>
             <div className="input-holder"> 
                 <Input className="input-field" value={todoItem} onChange={(e) => setTodoItem(e.target.value)}  placeholder="Add todo item" /> 
-                <Button type="primary" onClick={handleCreateTodo} shape="circle" icon={<PlusOutlined />} size={"large"} />
-                <Button type="primary" onClick={handleUploadTodos} shape="circle" icon={<UploadOutlined />} size={"large"} />
+                <Tooltip title="Add todo item"><Button type="primary" onClick={handleCreateTodo} shape="circle" icon={<PlusOutlined />} size={"large"} /></Tooltip>
+                <Tooltip title="Upload csv file"><Button type="primary" onClick={handleUploadTodos} shape="circle" icon={<UploadOutlined />} size={"large"} /></Tooltip>
                 <input hidden type="file" onChange={handleUpload} id="upload-btn"/>
 
-                <Button style={{marginLeft:"20px"}} type="primary" onClick={handleSignOut} icon={<UserDeleteOutlined />} size={"small"}> Sign Out</Button>
+                 <Tooltip title="Sign out"><Button style={{marginLeft:"20px"}} type="primary" onClick={handleSignOut} icon={<UserDeleteOutlined />} size={"small"}> Sign Out</Button> </Tooltip>
 
             </div>
             <Table className="table-style" columns={columns} rowKey={record => record._id} dataSource={todos} />
