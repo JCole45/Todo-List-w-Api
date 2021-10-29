@@ -94,6 +94,13 @@ const Todo = () => {
 
     }
 
+    const handleKeyPress = (e) => {
+        if(e.charCode === 13){
+            dispatch(createTodoItem(todoItem))
+            setTodoItem("")
+        }
+    }
+
     const handleSignOut = () => {
         dispatch(signOutUser())
     }
@@ -101,7 +108,7 @@ const Todo = () => {
     return (
         <>
             <div className="input-holder"> 
-                <Input className="input-field" value={todoItem} onChange={(e) => setTodoItem(e.target.value)}  placeholder="Add todo item" /> 
+                <Input className="input-field" value={todoItem} onChange={(e) => setTodoItem(e.target.value)} onKeyPress={handleKeyPress} placeholder="Add todo item" /> 
 
                 <Tooltip title="Add todo item">
                     <Button type="primary" onClick={handleCreateTodo} shape="circle" icon={<PlusOutlined />} size={"large"} />
