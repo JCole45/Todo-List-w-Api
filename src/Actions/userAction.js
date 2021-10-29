@@ -1,6 +1,6 @@
 import axios from 'axios'
-
 import {USER_REGISTER_SUCCESS, USER_REGISTER_REQUEST, USER_REGISTER_FAIL, USER_LOGIN_SUCCESS, USER_LOGIN_FAIL, USER_LOGIN_REQUEST, SIGN_OUT_USER} from "../Constants/userConstants"
+import {api} from "../api/base"
 
 
 export const loginUser = (loginDetails) => async (dispatch) => {
@@ -18,7 +18,7 @@ export const loginUser = (loginDetails) => async (dispatch) => {
             password: loginDetails.password
         }
 
-        const {result, message} = await axios.post(`https://superpoweredtodo.herokuapp.com/api/login/`, body , config)
+        const {result, message} = await axios.post(`${api}/api/login/`, body , config)
 
         dispatch({
             type: USER_LOGIN_SUCCESS,
@@ -54,7 +54,7 @@ export const registerUser = (registerDetails) => async (dispatch) => {
         }
 
 
-        const {result, message} = await axios.post(`https://superpoweredtodo.herokuapp.com/api/signup`, body , config)
+        const {result, message} = await axios.post(`${api}/api/signup`, body , config)
 
         dispatch({
             type: USER_REGISTER_SUCCESS,

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {CREATE_TODO_SUCCESS, CREATE_TODO_REQUEST, CREATE_TODO_FAIL, FETCH_TODO_REQUEST, FETCH_TODO_SUCCESS, FETCH_TODO_FAIL, DELETE_TODO_REQUEST, DELETE_TODO_SUCCESS, DELETE_TODO_FAIL, UPLOAD_TODO_SUCCESS, UPLOAD_TODO_FAIL, UPLOAD_TODO_REQUEST, EDIT_TODO_REQUEST, EDIT_TODO_SUCCESS, EDIT_TODO_FAIL} from "../Constants/todoConstants"
-
+import {api} from "../api/base"
 
 
 export const fetchTodos = (details) => async (dispatch, getState) => {
@@ -21,7 +21,7 @@ export const fetchTodos = (details) => async (dispatch, getState) => {
             },
         }
 
-        const {result} = await axios.get(`https://superpoweredtodo.herokuapp.com/api/todo?page=${details.page}&pageSize=${details.pageSize}`, {} , config)
+        const {result} = await axios.get(`${api}/api/todo?page=${details.page}&pageSize=${details.pageSize}`, {} , config)
 
         dispatch({
             type: FETCH_TODO_SUCCESS,
@@ -57,7 +57,7 @@ export const createTodoItem = (todo) => async (dispatch, getState) => {
         const body = {
             name: todo
         }
-        const {result, message} = await axios.post(`https://superpoweredtodo.herokuapp.com/api/todo`, body , config)
+        const {result, message} = await axios.post(`${api}/api/todo`, body , config)
 
         dispatch({
             type: CREATE_TODO_SUCCESS,
@@ -93,7 +93,7 @@ export const uploadTodoItem = (file) => async (dispatch, getState) =>{
             },
         }
 
-        const {message} = await axios.post(`https://superpoweredtodo.herokuapp.com/api/todo/upload`, file , config)
+        const {message} = await axios.post(`${api}/api/todo/upload`, file , config)
 
         dispatch({
             type: UPLOAD_TODO_SUCCESS,
@@ -135,7 +135,7 @@ export const editTodoItem = (text, details) => async (dispatch, getState) => {
             status: details.status
         }
 
-        const {result, message} = await axios.put(`https://superpoweredtodo.herokuapp.com/api/todo/${details._id}`, body , config)
+        const {result, message} = await axios.put(`${api}/api/todo/${details._id}`, body , config)
 
         dispatch({
             type: EDIT_TODO_SUCCESS,
@@ -172,7 +172,7 @@ export const deleteTodoItem = (_id) => async (dispatch, getState) => {
             },
         }
 
-        const {message} = await axios.delete(`https://superpoweredtodo.herokuapp.com/api/todo/${_id}`, {} , config)
+        const {message} = await axios.delete(`${api}/api/todo/${_id}`, {} , config)
 
         dispatch({
             type: DELETE_TODO_SUCCESS,
