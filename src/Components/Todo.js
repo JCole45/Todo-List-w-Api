@@ -23,7 +23,7 @@ const Todo = () => {
     }
 
     const handleEdit = (text, record) => {
-        editTodoItem(text, record)
+        dispatch(editTodoItem(text, record))
         setEdit(text)
         setEditId(record._id)
     }
@@ -110,7 +110,7 @@ const Todo = () => {
                 <Tooltip title="Upload csv file">
                     <Button type="primary" onClick={handleUploadTodos} shape="circle" icon={<UploadOutlined />} size={"large"} />
                 </Tooltip>
-                <input hidden type="file" onChange={handleUpload} id="upload-btn"/>
+                <input hidden type="file" accept=".csv" onChange={handleUpload} id="upload-btn"/>
 
                 <Tooltip title="Sign out">
                     <Button style={{marginLeft:"20px"}} type="primary" onClick={handleSignOut} icon={<UserDeleteOutlined />} size={"small"}> 

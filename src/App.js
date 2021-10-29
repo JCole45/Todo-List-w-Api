@@ -19,8 +19,8 @@ function App() {
 
   return (
     <div className="App">
-      {user?.token && <Todo/>}
-      {!user?.token && <Authentcation/>}
+      {!user?.token && <Todo/>}
+      {user?.token && <Authentcation/>}
     </div>
   );
 }
