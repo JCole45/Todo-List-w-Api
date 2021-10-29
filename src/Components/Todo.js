@@ -87,7 +87,7 @@ const Todo = () => {
         let file = e.target.files[0]
         const formData = new FormData()
 
-        formData.append("name", file)
+        formData.append("file", file)
         console.log(formData)
         console.log(file)
         dispatch(uploadTodoItem(formData))        
