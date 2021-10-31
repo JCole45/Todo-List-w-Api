@@ -15,5 +15,7 @@ export const todoReducer = (state={todos:[{_id:'1', name:"John", status:"Active"
             return {loading: false, success: false, todos: state.todos.filter(item => item._id !== action.payload)}
         default:
             return state
+            
+            
     } 
 }
