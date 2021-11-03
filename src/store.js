@@ -11,9 +11,10 @@ const reducer = combineReducers({
     getTodo: getTodoReducer
 })
 
-const tokenFromStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token')) : ""
+const userFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : {}
 
 const initialState = {
+    userLogin: {...userFromStorage}
 }
 
 const middleware = [thunk]

@@ -24,14 +24,12 @@ export const loginUser = (loginDetails) => async (dispatch, getState) => {
         let message = data.message
         let result = data.result
 
-        console.log("loging", data)
-
         dispatch({
             type: USER_LOGIN_SUCCESS,
             payload: {message, ...result}
         })
 
-        localStorage.setItem('token', JSON.stringify(result.token))
+        localStorage.setItem('userInfo', JSON.stringify({user: result}))
 
     }
     catch(err){
@@ -45,7 +43,6 @@ export const loginUser = (loginDetails) => async (dispatch, getState) => {
 
 
 export const registerUser = (registerDetails) => async (dispatch) => {
-    console.log(registerDetails)
     dispatch({
         type: USER_REGISTER_REQUEST
     })
@@ -84,5 +81,5 @@ export const signOutUser = () => (dispatch) => {
       type: SIGN_OUT_USER
   })
 
-  localStorage.setItem('token', null)
+  localStorage.setItem('userInfo', null)
 }

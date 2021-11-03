@@ -1,5 +1,5 @@
-import React from 'react'
-import { Table, Space, Alert, Modal } from 'antd';
+import React, {useEffect} from 'react'
+import { Table, Space, message as Message, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
 import { PlusOutlined, DeleteTwoTone, UploadOutlined, UserDeleteOutlined, EyeOutlined} from '@ant-design/icons';
@@ -7,7 +7,7 @@ import { Tooltip } from 'antd';
 import { Typography } from 'antd';
 import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo} from "../Actions/todoActions"
 import {signOutUser} from "../Actions/userAction"
-import {GET_TODO_RESET} from "../Constants/todoConstants"
+import {GET_TODO_RESET, CLEAR_MESSAGE} from "../Constants/todoConstants"
 
 const { Paragraph } = Typography;
 
@@ -29,6 +29,15 @@ const Todo = () => {
 
     const handleViewTodo = (id) => {
         dispatch(fetchTodo(id))
+    }
+
+    const handleMessaging = (message) => {
+        if(message)
+        Message.info(message, ()=> {
+            dispatch({
+                type: CLEAR_MESSAGE
+            })
+        })
     }
 
     const columns = [
@@ -75,10 +84,14 @@ const Todo = () => {
     ];
 
     const Todos = useSelector(state => state.todo)
-    const {todos, success, error} = Todos
+    const {todos, success, error, message} = Todos
 
     const getTodo = useSelector(state => state.getTodo)
     const {todo, success: getTodoSuccess, error: getTodoError, loading: getTodoLoading} = getTodo
+
+    useEffect(() => {
+       handleMessaging(message)
+    }, [message])
 
     const handleCreateTodo = () => {
         let todo = todoItem.trim()
@@ -94,13 +107,10 @@ const Todo = () => {
     }
 
     const handleUpload = (e) => {
-        console.log(e)
         let file = e.target.files[0]
         const formData = new FormData()
 
         formData.append("file", file)
-        console.log(formData)
-        console.log(file)
         dispatch(uploadTodoItem(formData))        
 
     }

@@ -22,11 +22,11 @@ const Register = ({button}) => {
         })
     }, [])
 
-    const onFinish = (values: any) => {
+    const onFinish = (values) => {
         dispatch(registerUser(values))
     };
 
-    const onFinishFailed = (errorInfo: any) => {
+    const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
 

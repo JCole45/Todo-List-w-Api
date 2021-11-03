@@ -58,7 +58,6 @@ export const fetchTodo = (id) => async(dispatch, getState) => {
         const {data} = await axios.get(`${api}/api/todo/${id}` , config)
         let result = data.result
         let message = data.message
-        console.log(data)
 
         dispatch({
             type: GET_TODO_SUCCESS,
