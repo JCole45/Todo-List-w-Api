@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, Spin } from 'antd';
 import 'antd/dist/antd.css';
 import Message from "./Message"
 import {loginUser} from "../Actions/userAction"
@@ -12,7 +12,7 @@ const { Title } = Typography;
 const Login = ({button}) => {
 
     const userLoginData = useSelector(state=> state.userLogin)
-    const { user, success, error} = userLoginData
+    const { user, success, error, loading} = userLoginData
 
     const dispatch = useDispatch()
     const [username, setUsername] = useState("")
@@ -33,12 +33,13 @@ const Login = ({button}) => {
     }, [])
 
     return (
-        <section style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", width:'50%', margin:"0 auto"}}>
+        <section className="login-form" >
 
         <Title level={2}> Login </Title>
 
         {error && <Message message={error} type={"error"} />}
         {success && <Message message={user.message} type={"success"} />}
+        {loading && <Spin size="small"/>}
 
         <Form
             name="basic"

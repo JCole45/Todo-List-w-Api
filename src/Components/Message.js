@@ -4,7 +4,7 @@ import { Alert } from 'antd';
 
 const Message = ({message, type}) => {
     return (
-        <div style={{margin: "0 auto", width: "50%"}}> 
+        <div className="message-alert"> 
             <Alert message={message} type={type} />
         </div>
     )

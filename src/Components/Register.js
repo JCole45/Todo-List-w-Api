@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import { Form, Input, Button, Typography } from 'antd';
+import { Form, Input, Button, Typography, Spin } from 'antd';
 import 'antd/dist/antd.css';
 import Message from "./Message"
 import {registerUser} from "../Actions/userAction"
@@ -14,7 +14,7 @@ const Register = ({button}) => {
     const dispatch = useDispatch()
 
     const userRegisterData = useSelector(state => state.userRegister)
-    const {user, success, error} = userRegisterData
+    const {user, success, error, loading} = userRegisterData
 
     useEffect(() => {
         dispatch({
@@ -31,11 +31,12 @@ const Register = ({button}) => {
     };
 
     return (
-        <section style={{display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", width:'50%', margin:"0 auto"}}>
+        <section className="register-form" >
             <Title level={2}> Register </Title>
 
             {error && <Message message={error} type={"error"} />}
             {success && <Message message={user.message} type={"success"} />}
+            {loading && <Spin size="small"/>}
 
             <Form
                 name="basic"
