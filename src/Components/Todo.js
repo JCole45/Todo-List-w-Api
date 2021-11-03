@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import { Table, Space, message as Message, Modal } from 'antd';
+import { Table, Space, message as Message, Modal, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
 import { PlusOutlined, DeleteOutlined, UploadOutlined, UserDeleteOutlined, EyeOutlined} from '@ant-design/icons';
@@ -134,8 +134,9 @@ const Todo = () => {
 
     return (
         <>
-            <Modal title={todo.name ? todo.name : "Todo"} visible={getTodoSuccess} onOk={handleClose} onCancel={handleClose}>
+            <Modal title={todo.name ? todo.name : "-"} visible={getTodoSuccess || getTodoLoading} onOk={handleClose} onCancel={handleClose}>
                 {todo.name}
+                {getTodoLoading && <Spin size="miffle" />}
             </Modal> 
 
             <div style={{height:"30px", marginBottom:"3em", display:'inline-block'}}>  </div>
