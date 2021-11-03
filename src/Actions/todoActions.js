@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {CREATE_TODO_SUCCESS, CREATE_TODO_REQUEST, CREATE_TODO_FAIL, FETCH_TODO_REQUEST, FETCH_TODO_SUCCESS, FETCH_TODO_FAIL, DELETE_TODO_SUCCESS, DELETE_TODO_FAIL, UPLOAD_TODO_SUCCESS, UPLOAD_TODO_FAIL, UPLOAD_TODO_REQUEST, EDIT_TODO_REQUEST, EDIT_TODO_SUCCESS, EDIT_TODO_FAIL} from "../Constants/todoConstants"
+import {CREATE_TODO_SUCCESS, CREATE_TODO_REQUEST, CREATE_TODO_FAIL, FETCH_TODO_REQUEST, FETCH_TODO_SUCCESS, FETCH_TODO_FAIL, DELETE_TODO_SUCCESS, DELETE_TODO_FAIL, UPLOAD_TODO_SUCCESS, UPLOAD_TODO_FAIL, UPLOAD_TODO_REQUEST, EDIT_TODO_REQUEST, EDIT_TODO_SUCCESS, EDIT_TODO_FAIL, GET_TODO_FAIL, GET_TODO_REQUEST, GET_TODO_SUCCESS} from "../Constants/todoConstants"
 import {api} from "../api/base"
 
 
@@ -32,6 +32,42 @@ export const fetchTodos = (details) => async (dispatch, getState) => {
         dispatch({
             type: FETCH_TODO_FAIL,
             err: err.message
+        })
+    }
+}
+
+export const fetchTodo = (id) => async(dispatch, getState) => {
+    const {userLogin: {user}} = getState()
+
+    const headerValue = user.token
+    const userId = user._id
+
+    const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+    dispatch({
+        type: GET_TODO_REQUEST
+    })
+
+    try{
+        const config = {
+            headers: {
+                Authorization: `Bearer ${authorization}`
+            },
+        }
+
+        const {data} = await axios.get(`${api}/api/todo/${id}` , config)
+        let result = data.result
+        let message = data.message
+        console.log(data)
+
+        dispatch({
+            type: GET_TODO_SUCCESS,
+            payload: {...result, message}
+        })
+    }catch(err){
+        dispatch({
+            type: GET_TODO_FAIL,
+            payload: err.message
         })
     }
 }

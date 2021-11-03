@@ -1,13 +1,13 @@
 import React from 'react'
-import { Table, Space, Alert } from 'antd';
+import { Table, Space, Alert, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
-import { PlusOutlined, DeleteTwoTone, UploadOutlined, UserDeleteOutlined} from '@ant-design/icons';
+import { PlusOutlined, DeleteTwoTone, UploadOutlined, UserDeleteOutlined, EyeOutlined} from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { Typography } from 'antd';
-import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem} from "../Actions/todoActions"
+import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo} from "../Actions/todoActions"
 import {signOutUser} from "../Actions/userAction"
-
+import {GET_TODO_RESET} from "../Constants/todoConstants"
 
 const { Paragraph } = Typography;
 
@@ -25,6 +25,10 @@ const Todo = () => {
         dispatch(editTodoItem(text, record))
         setEdit(text)
         setEditId(record._id)
+    }
+
+    const handleViewTodo = (id) => {
+        dispatch(fetchTodo(id))
     }
 
     const columns = [
@@ -57,9 +61,14 @@ const Todo = () => {
         key: 'action',
         render: (text, record) => (
             <Space size="large">
+                <Tooltip title="View todo">
+                    <EyeOutlined onClick={()=> handleViewTodo(record._id)} />
+                </Tooltip>
+
                 <Tooltip title="Delete todo item">
                     <DeleteTwoTone style={{color:"red !important"}} onClick={()=> handleDelete(record._id)} size={"large"} color="secondary" />
                 </Tooltip>
+
             </Space>
         ),
     },
@@ -67,6 +76,9 @@ const Todo = () => {
 
     const Todos = useSelector(state => state.todo)
     const {todos, success, error} = Todos
+
+    const getTodo = useSelector(state => state.getTodo)
+    const {todo, success: getTodoSuccess, error: getTodoError, loading: getTodoLoading} = getTodo
 
     const handleCreateTodo = () => {
         let todo = todoItem.trim()
@@ -104,8 +116,18 @@ const Todo = () => {
         dispatch(signOutUser())
     }
 
+    const handleClose = () => {
+        dispatch({
+            type: GET_TODO_RESET
+        })
+    }
+
     return (
         <>
+            <Modal title={todo.name ? todo.name : "Todo"} visible={getTodoSuccess} onOk={handleClose} onCancel={handleClose}>
+                {todo.name}
+            </Modal> 
+
             <div style={{height:"30px", marginBottom:"3em", display:'inline-block'}}>  </div>
 
             <div className="input-holder"> 
