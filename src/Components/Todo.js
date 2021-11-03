@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import { Table, Space, message as Message, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
-import { PlusOutlined, DeleteTwoTone, UploadOutlined, UserDeleteOutlined, EyeOutlined} from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, UploadOutlined, UserDeleteOutlined, EyeOutlined} from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { Typography } from 'antd';
 import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo} from "../Actions/todoActions"
@@ -71,11 +71,11 @@ const Todo = () => {
         render: (text, record) => (
             <Space size="large">
                 <Tooltip title="View todo">
-                    <EyeOutlined onClick={()=> handleViewTodo(record._id)} />
+                    <EyeOutlined className="view-btn" style={{color:"#1890ff"}} onClick={()=> handleViewTodo(record._id)} />
                 </Tooltip>
 
                 <Tooltip title="Delete todo item">
-                    <DeleteTwoTone style={{color:"red !important"}} onClick={()=> handleDelete(record._id)} size={"large"} color="secondary" />
+                <DeleteOutlined className="delete-btn" style={{color:"red"}} onClick={()=> handleDelete(record._id)} />
                 </Tooltip>
 
             </Space>
