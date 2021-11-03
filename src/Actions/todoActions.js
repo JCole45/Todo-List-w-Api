@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {CREATE_TODO_SUCCESS, CREATE_TODO_REQUEST, CREATE_TODO_FAIL, FETCH_TODO_REQUEST, FETCH_TODO_SUCCESS, FETCH_TODO_FAIL, DELETE_TODO_REQUEST, DELETE_TODO_SUCCESS, DELETE_TODO_FAIL, UPLOAD_TODO_SUCCESS, UPLOAD_TODO_FAIL, UPLOAD_TODO_REQUEST, EDIT_TODO_REQUEST, EDIT_TODO_SUCCESS, EDIT_TODO_FAIL} from "../Constants/todoConstants"
+import {CREATE_TODO_SUCCESS, CREATE_TODO_REQUEST, CREATE_TODO_FAIL, FETCH_TODO_REQUEST, FETCH_TODO_SUCCESS, FETCH_TODO_FAIL, DELETE_TODO_SUCCESS, DELETE_TODO_FAIL, UPLOAD_TODO_SUCCESS, UPLOAD_TODO_FAIL, UPLOAD_TODO_REQUEST, EDIT_TODO_REQUEST, EDIT_TODO_SUCCESS, EDIT_TODO_FAIL} from "../Constants/todoConstants"
 import {api} from "../api/base"
 
 
@@ -21,7 +21,8 @@ export const fetchTodos = (details) => async (dispatch, getState) => {
             },
         }
 
-        const {result} = await axios.get(`${api}/api/todo?page=${details.page}&pageSize=${details.pageSize}`, {} , config)
+        const {data} = await axios.get(`${api}/api/todo?page=${details.page}&pageSize=${details.pageSize}` , config)
+        let result = data.result
 
         dispatch({
             type: FETCH_TODO_SUCCESS,
@@ -42,7 +43,6 @@ export const createTodoItem = (todo) => async (dispatch, getState) => {
     const userId = user._id
 
     const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
-
     dispatch({
         type: CREATE_TODO_REQUEST
     })
@@ -57,7 +57,10 @@ export const createTodoItem = (todo) => async (dispatch, getState) => {
         const body = {
             name: todo
         }
-        const {result, message} = await axios.post(`${api}/api/todo`, body , config)
+        const {data} = await axios.post(`${api}/api/todo`, body , config)
+
+        let message = data.message
+        let result = data.result
 
         dispatch({
             type: CREATE_TODO_SUCCESS,
@@ -100,6 +103,8 @@ export const uploadTodoItem = (file) => async (dispatch, getState) =>{
             payload: message
         })
 
+        dispatch(fetchTodos({page:1, pageSize:25}))
+
 
     }catch(err){
         dispatch({
@@ -135,7 +140,9 @@ export const editTodoItem = (text, details) => async (dispatch, getState) => {
             status: details.status
         }
 
-        const {result, message} = await axios.put(`${api}/api/todo/${details._id}`, body , config)
+        const {data} = await axios.put(`${api}/api/todo/${details._id}`, body , config)
+        let result = data.result
+        let message = data.message
 
         dispatch({
             type: EDIT_TODO_SUCCESS,
@@ -161,10 +168,6 @@ export const deleteTodoItem = (_id) => async (dispatch, getState) => {
 
     const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
 
-    dispatch({
-        type: DELETE_TODO_REQUEST
-    })
-
     try{
         const config = {
             headers: {
@@ -172,11 +175,12 @@ export const deleteTodoItem = (_id) => async (dispatch, getState) => {
             },
         }
 
-        const {message} = await axios.delete(`${api}/api/todo/${_id}`, {} , config)
+        const {data} = await axios.delete(`${api}/api/todo/${_id}`, config)
+        const message = data.message
 
         dispatch({
             type: DELETE_TODO_SUCCESS,
-            paylaod: {_id}
+            payload: _id
         })
     }catch(err){
         dispatch({

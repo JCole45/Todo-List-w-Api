@@ -10,6 +10,8 @@ const reducer = combineReducers({
     userRegister: userRegisterReducer
 })
 
+const tokenFromStorage = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token')) : ""
+
 const initialState = {
 }
 

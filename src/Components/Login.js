@@ -18,11 +18,11 @@ const Login = ({button}) => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
-    const onFinish = (values: any) => {
+    const onFinish = (values) => {
         dispatch(loginUser(values))
     };
 
-    const onFinishFailed = (errorInfo: any) => {
+    const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
 

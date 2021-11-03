@@ -3,7 +3,9 @@ import {USER_REGISTER_SUCCESS, USER_REGISTER_REQUEST, USER_REGISTER_FAIL, USER_L
 import {api} from "../api/base"
 
 
-export const loginUser = (loginDetails) => async (dispatch) => {
+export const loginUser = (loginDetails) => async (dispatch, getState) => {
+    const {userLogin} = getState()
+
     dispatch({
         type: USER_LOGIN_REQUEST
     })
@@ -14,16 +16,22 @@ export const loginUser = (loginDetails) => async (dispatch) => {
         }
 
         const body = {
-            email: loginDetails.username,
+            email: loginDetails.email,
             password: loginDetails.password
         }
 
-        const {result, message} = await axios.post(`${api}/api/login/`, body , config)
+        const {data} = await axios.post(`${api}/api/login/`, body , config)
+        let message = data.message
+        let result = data.result
+
+        console.log("loging", data)
 
         dispatch({
             type: USER_LOGIN_SUCCESS,
             payload: {message, ...result}
         })
+
+        localStorage.setItem('token', JSON.stringify(result.token))
 
     }
     catch(err){
@@ -37,6 +45,7 @@ export const loginUser = (loginDetails) => async (dispatch) => {
 
 
 export const registerUser = (registerDetails) => async (dispatch) => {
+    console.log(registerDetails)
     dispatch({
         type: USER_REGISTER_REQUEST
     })
@@ -48,7 +57,7 @@ export const registerUser = (registerDetails) => async (dispatch) => {
 
         const body = {
             name: registerDetails.name,
-            email: registerDetails.username,
+            email: registerDetails.email,
             password: registerDetails.password,
             confirmPassword: registerDetails.confirm_password
         }
@@ -74,4 +83,6 @@ export const signOutUser = () => (dispatch) => {
   dispatch({
       type: SIGN_OUT_USER
   })
+
+  localStorage.setItem('token', null)
 }

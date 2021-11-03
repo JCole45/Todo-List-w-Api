@@ -5,14 +5,16 @@ import Authentcation from "./Components/Authentication"
 import { useDispatch, useSelector } from 'react-redux'
 import {fetchTodos} from "./Actions/todoActions"
 
-
 function App() {
   
   const dispatch = useDispatch()
 
+  const userLogin = useSelector(state => state.userLogin)
+  const {success} = userLogin
+
   useEffect(() => {
     dispatch(fetchTodos({page:1, pageSize:25}))
-  }, [])
+  }, [success])
 
   const userData = useSelector(state=> state.userLogin)
   const { user } = userData

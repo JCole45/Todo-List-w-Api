@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react'
-import { Table, Space } from 'antd';
+import React from 'react'
+import { Table, Space, Alert } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
 import { PlusOutlined, DeleteTwoTone, UploadOutlined, UserDeleteOutlined} from '@ant-design/icons';
@@ -16,10 +16,9 @@ const Todo = () => {
     const [todoItem, setTodoItem] = React.useState("")
     const [edit, setEdit] = React.useState("")
     const [editId,setEditId] = React.useState("")
-    const [file, setFile] = React.useState()
 
     const handleDelete = (id) => {
-        deleteTodoItem(id)
+        dispatch(deleteTodoItem(id))
     }
 
     const handleEdit = (text, record) => {
@@ -39,14 +38,14 @@ const Todo = () => {
         title: 'Todo',
         dataIndex: 'name',
         key: 'name',
-        render: text => <p> {text}</p>
-    },
-    {
-        title: "Content",
-        dataIndex: 'content',
-        key: "content",
         render: (text, record) =>  <Paragraph editable={{ onChange: (e) => handleEdit(e, record) }}>{record._id === editId ? edit : text}</Paragraph>
     },
+    // {
+    //     title: "Content",
+    //     dataIndex: 'content',
+    //     key: "content",
+    //     render: (text, record) =>  <Paragraph editable={{ onChange: (e) => handleEdit(e, record) }}>{record._id === editId ? edit : text}</Paragraph>
+    // },
     {
         title: 'Status',
         dataIndex: 'status',
@@ -59,7 +58,7 @@ const Todo = () => {
         render: (text, record) => (
             <Space size="large">
                 <Tooltip title="Delete todo item">
-                    <DeleteTwoTone onClick={()=> handleDelete(record._id)} size={"large"} color="secondary" className="delete-btn" />
+                    <DeleteTwoTone style={{color:"red !important"}} onClick={()=> handleDelete(record._id)} size={"large"} color="secondary" />
                 </Tooltip>
             </Space>
         ),
@@ -67,15 +66,15 @@ const Todo = () => {
     ];
 
     const Todos = useSelector(state => state.todo)
-    const {todos} = Todos
-
-    useEffect(()=> {
-        console.log(todos)
-    }, [])
+    const {todos, success, error} = Todos
 
     const handleCreateTodo = () => {
-        dispatch(createTodoItem(todoItem))
-        setTodoItem("")
+        let todo = todoItem.trim()
+
+        if(todo.length >= 1){
+            dispatch(createTodoItem(todoItem))
+            setTodoItem("")
+        }
     }
 
     const handleUploadTodos = () => {
@@ -107,6 +106,8 @@ const Todo = () => {
 
     return (
         <>
+            <div style={{height:"30px", marginBottom:"3em", display:'inline-block'}}>  </div>
+
             <div className="input-holder"> 
                 <Input className="input-field" value={todoItem} onChange={(e) => setTodoItem(e.target.value)} onKeyPress={handleKeyPress} placeholder="Add todo item" /> 
 
