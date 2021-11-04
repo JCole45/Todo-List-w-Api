@@ -2,9 +2,9 @@ import React, {useEffect} from 'react'
 import { Table, Space, message as Message, Modal, Spin, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
-import { PlusOutlined, DeleteOutlined, UploadOutlined, UserDeleteOutlined, EyeOutlined} from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, UploadOutlined, UserDeleteOutlined, EyeOutlined, DownloadOutlined} from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo} from "../Actions/todoActions"
+import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo, downloadTodos} from "../Actions/todoActions"
 import {signOutUser} from "../Actions/userAction"
 import {GET_TODO_RESET, CLEAR_MESSAGE} from "../Constants/todoConstants"
 
@@ -51,14 +51,32 @@ const Todo = () => {
         dispatch(fetchTodo(id))
     }
 
+
     const handleMessaging = (message) => {
-        if(message)
-        Message.info(message, ()=> {
-            dispatch({
-                type: CLEAR_MESSAGE
+        if(message && message.type === "success")
+            Message.success(message.message, ()=> {
+                dispatch({
+                    type: CLEAR_MESSAGE
+                })
             })
-        })
+
+        if(message && message.type === "error"){
+            Message.error(message.message, ()=> {
+                dispatch({
+                    type: CLEAR_MESSAGE
+                })
+            })
+        }
+
+        if(message && message.type === "info"){
+            Message.info(message.message, ()=> {
+                dispatch({
+                    type: CLEAR_MESSAGE
+                })
+            })
+        }
     }
+
 
     const columns = [
     {
@@ -73,12 +91,6 @@ const Todo = () => {
         key: 'name',
         render: (text, record) =>  <Paragraph editable={{ onChange: (e) => handleEdit(e, record) }}>{record._id === editId ? edit : text}</Paragraph>
     },
-    // {
-    //     title: "Content",
-    //     dataIndex: 'content',
-    //     key: "content",
-    //     render: (text, record) =>  <Paragraph editable={{ onChange: (e) => handleEdit(e, record) }}>{record._id === editId ? edit : text}</Paragraph>
-    // },
     {
         title: 'Status',
         dataIndex: 'status',
@@ -110,12 +122,6 @@ const Todo = () => {
             key: 'name',
             render: (text, record) =>  <Paragraph editable={{ onChange: (e) => handleEdit(e, record) }}>{record._id === editId ? edit : text}</Paragraph>
         },
-        // {
-        //     title: "Content",
-        //     dataIndex: 'content',
-        //     key: "content",
-        //     render: (text, record) =>  <Paragraph editable={{ onChange: (e) => handleEdit(e, record) }}>{record._id === editId ? edit : text}</Paragraph>
-        // },
         {
             title: 'Status',
             dataIndex: 'status',
@@ -141,14 +147,21 @@ const Todo = () => {
     ];
 
     const Todos = useSelector(state => state.todo)
-    const {todos, success, error, message} = Todos
+    const {todos, message} = Todos
 
     const getTodo = useSelector(state => state.getTodo)
     const {todo, success: getTodoSuccess, error: getTodoError, loading: getTodoLoading} = getTodo
 
+    const downloadTodo = useSelector(state => state.downloadTodo)
+    const {file, success: downloadSuccess, error: downloadError, loading: downloadLoading} = downloadTodo
+
     useEffect(() => {
        handleMessaging(message)
     }, [message])
+
+    useEffect (() => {
+        handleTodoDownload(file)
+    }, [downloadSuccess])
 
     const handleCreateTodo = () => {
         let todo = todoItem.trim()
@@ -172,6 +185,10 @@ const Todo = () => {
 
     }
 
+    const handleDownloadTodos = (e) => {
+        dispatch(downloadTodos())
+    }
+
     const handleKeyPress = (e) => {
         if(e.charCode === 13){
             dispatch(createTodoItem(todoItem))
@@ -189,27 +206,36 @@ const Todo = () => {
         })
     }
 
+    function handleTodoDownload (blob) {
+        if(blob){
+        var a_tag = document.getElementById("download")
+        var url = window.URL.createObjectURL(blob)
+
+        a_tag.href = url
+        a_tag.download = "myTodos.csv"
+        a_tag.click()
+         }
+    }
+
     return (
         <>
             <Title level={1}> Todo App </Title>
 
             <Modal title={todo.name ? todo.name : "-"} visible={getTodoSuccess || getTodoLoading} onOk={handleClose} onCancel={handleClose}>
                 {todo.name}
-                {getTodoLoading && <Spin size="miffle" />}
+                {getTodoLoading && <Spin size="middle" />}
             </Modal> 
 
             <div className="signout-button">
-            <Tooltip title="Sign out">
-                <Button type="primary" onClick={handleSignOut} icon={<UserDeleteOutlined />} size={"small"}> 
-                    Sign Out
-                </Button> 
-            </Tooltip>
+                <Tooltip title="Sign out">
+                    <Button type="primary" onClick={handleSignOut} icon={<UserDeleteOutlined />} size={"small"}> 
+                        Sign Out
+                    </Button> 
+                </Tooltip>
             </div>
 
-            <div style={{height:"30px", marginBottom:"3em", display:'inline-block'}}>  </div>
 
             <div className="input-holder"> 
-                <span >
                 <Input className="input-field" value={todoItem} onChange={(e) => setTodoItem(e.target.value)} onKeyPress={handleKeyPress} placeholder="Add todo item" /> 
 
                 <Tooltip title="Add todo item">
@@ -220,11 +246,14 @@ const Todo = () => {
                     <Button type="primary" onClick={handleUploadTodos} shape="circle" icon={<UploadOutlined />} size={"large"} />
                 </Tooltip>
                 <input hidden type="file" accept=".csv" onChange={handleUpload} id="upload-btn"/>
-                </span>
 
+                <Tooltip title="Download all todo items">
+                    <Button type="primary" onClick={handleDownloadTodos} shape="circle" icon={<DownloadOutlined />} size={"large"} />
+                </Tooltip>
+                <a href="" hidden download id="download"> </a>
             </div>
 
-            <Table className="table-style" columns={screenType !=="mobile" ? columns : mobileColumns} rowKey={record => record._id} dataSource={todos} />
+            <Table className="table-style" columns={screenType !== "mobile" ? columns : mobileColumns} rowKey={record => record._id} dataSource={todos} />
         </>
     )
 }
