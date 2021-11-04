@@ -6,7 +6,7 @@ import { PlusOutlined, DeleteOutlined, UploadOutlined, UserDeleteOutlined, EyeOu
 import { Tooltip } from 'antd';
 import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo, downloadTodos} from "../Actions/todoActions"
 import {signOutUser} from "../Actions/userAction"
-import {GET_TODO_RESET, CLEAR_MESSAGE} from "../Constants/todoConstants"
+import {GET_TODO_RESET, CLEAR_MESSAGE, DOWNLOAD_TODO_RESET} from "../Constants/todoConstants"
 
 const { Paragraph, Title } = Typography;
 
@@ -208,13 +208,17 @@ const Todo = () => {
 
     function handleTodoDownload (blob) {
         if(blob){
-        var a_tag = document.getElementById("download")
-        var url = window.URL.createObjectURL(blob)
+            const a_tag = document.getElementById("download")
+            const url = window.URL.createObjectURL(blob)
 
-        a_tag.href = url
-        a_tag.download = "myTodos.csv"
-        a_tag.click()
-         }
+            a_tag.href = url
+            a_tag.download = "myTodos.csv"
+            a_tag.click()
+
+            dispatch({
+                type: DOWNLOAD_TODO_RESET
+            })
+        }
     }
 
     return (
