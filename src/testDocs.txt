@@ -1,0 +1,6 @@
+global.matchMedia and Object.defineProperty configurations in setupTests.js file to resolve issues with useDispatch error in tests
+
+install enzyme, wojtekmaj/enzyme-adapter-react-17, react-test-renderer, enzyme-to-json
+
+- in setupTests, import configure from enzyme, and Adapter from @wojtekmaj/enzyme-adapter-react-17
+- add: configure({ adapter: new Adapter() }); to configure Adapter
