@@ -17,9 +17,11 @@ const Login = ({button}) => {
     const dispatch = useDispatch()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [show, setTrue] = useState(false)
 
     const onFinish = (values) => {
         dispatch(loginUser(values))
+        setTrue(true)
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -37,9 +39,10 @@ const Login = ({button}) => {
 
         <Title level={2}> Login </Title>
 
-        {error && <Message message={error} type={"error"} />}
-        {success && <Message message={user.message} type={"success"} />}
+        {error && <Message id="error_message" message={error} type={"error"} />}
+        {success && <Message data-testid="success_message" message={user.message} type={"success"} />}
         {loading && <Spin size="small"/>}
+        {show && <div data-testid="success" >success</div>}
 
         <Form
             name="basic"
@@ -57,7 +60,7 @@ const Login = ({button}) => {
                 onChange={(e)=> setUsername(e.target.value)}
                 rules={[{ required: true, message: 'Please enter your email!' }]}
             >
-                <Input />
+                <Input data-testid="email"/>
             </Form.Item>
 
             <Form.Item
@@ -67,11 +70,11 @@ const Login = ({button}) => {
                 onChange={(e)=> setPassword(e.target.value)}
                 rules={[{ required: true, message: 'Please enter your password!' }]}
             >
-                <Input.Password />
+                <Input.Password data-testid="password"/>
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                 <Button type="primary" htmlType="submit">
+                 <Button data-testid="submit-button" type="primary" htmlType="submit">
                     Submit
                 </Button>
                 {button}

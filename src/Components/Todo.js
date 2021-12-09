@@ -6,6 +6,7 @@ import { PlusOutlined, DeleteOutlined, UploadOutlined, UserDeleteOutlined, EyeOu
 import { Tooltip } from 'antd';
 import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo, downloadTodos} from "../Actions/todoActions"
 import {signOutUser} from "../Actions/userAction"
+import Pagination from "./Pagination"
 import {GET_TODO_RESET, CLEAR_MESSAGE, DOWNLOAD_TODO_RESET} from "../Constants/todoConstants"
 
 const { Paragraph, Title } = Typography;
@@ -257,7 +258,8 @@ const Todo = () => {
                 <a href="" hidden download id="download"> </a>
             </div>
 
-            <Table className="table-style" columns={screenType !== "mobile" ? columns : mobileColumns} rowKey={record => record._id} dataSource={todos} />
+            <Table className="table-style" columns={screenType !== "mobile" ? columns : mobileColumns} pagination={false} rowKey={record => record._id} dataSource={todos} />
+            <Pagination/>
         </>
     )
 }

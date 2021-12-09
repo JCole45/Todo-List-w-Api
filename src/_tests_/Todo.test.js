@@ -19,6 +19,6 @@ describe("This suit tests the Login component", () => {
     it("Has Todo in Header", () => {
         const wrapper = mount(<Provider store={store}> <Todo/>  </Provider>)
         expect(wrapper.contains("Todo")).toEqual(true)
-        console.log(wrapper)
+        //console.log(wrapper)
     })
 })

@@ -6,8 +6,8 @@ import {api} from "../api/base"
 export const fetchTodos = (details) => async (dispatch, getState) => {
     const {userLogin: {user}} = getState()
 
-    const headerValue = user.token
-    const userId = user._id
+    const headerValue = user?.token
+    const userId = user?._id
 
     const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
     dispatch({
@@ -26,7 +26,7 @@ export const fetchTodos = (details) => async (dispatch, getState) => {
 
         dispatch({
             type: FETCH_TODO_SUCCESS,
-            payload: result.todos
+            payload: {todos: result.todos, total: result.total}
         })
     }catch(err){
         dispatch({

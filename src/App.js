@@ -13,7 +13,7 @@ function App() {
   const {success} = userLogin
 
   useEffect(() => {
-    dispatch(fetchTodos({page:1, pageSize:25}))
+    dispatch(fetchTodos({page:1, pageSize:30}))
   }, [success])
 
   const userData = useSelector(state=> state.userLogin)

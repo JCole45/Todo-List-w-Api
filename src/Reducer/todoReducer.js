@@ -1,17 +1,17 @@
 import {CREATE_TODO_REQUEST, CREATE_TODO_SUCCESS, CREATE_TODO_FAIL, FETCH_TODO_SUCCESS, DELETE_TODO_SUCCESS, DELETE_TODO_FAIL, UPLOAD_TODO_SUCCESS, GET_TODO_FAIL, GET_TODO_REQUEST, GET_TODO_SUCCESS, GET_TODO_RESET, CLEAR_MESSAGE, CREATE_MESSAGE, DOWNLOAD_TODO_REQUEST, DOWNLOAD_TODO_FAIL, DOWNLOAD_TODO_RESET, DOWNLOAD_TODO_SUCCESS} from "../Constants/todoConstants"
 
-export const todoReducer = (state={todos:[], loading:false, success:false, message:null}, action) => {
+export const todoReducer = (state={todos:[], total:0, loading:false, success:false, message:null}, action) => {
     switch(action.type){
         case FETCH_TODO_SUCCESS: 
-            return {todos: action.payload, loading: false, success: false}
+            return {todos: action.payload.todos, total:action.payload.total, loading: false, success: false}
         case CREATE_TODO_REQUEST: 
-            return {loading: true, success: false, todos: state.todos}
+            return {loading: true, success: false, total:state.total, todos: state.todos}
         case CREATE_TODO_SUCCESS: 
-            return {loading: false, success: true, todos:[action.payload, ...state.todos], message:{message: "created", type: "success"}}
+            return {loading: false, success: true, total:state.total, todos:[action.payload, ...state.todos], message:{message: "created", type: "success"}}
         case CREATE_TODO_FAIL: 
-            return {laoding: false, success: false, todos: state.todos, error: action.payload, message: {message: action.payload, type: "error"}}
+            return {laoding: false, success: false, total:state.total, todos: state.todos, error: action.payload, message: {message: action.payload, type: "error"}}
         case DELETE_TODO_SUCCESS:
-            return state = {loading: false, success: false, todos: state.todos.filter(item => item._id !== action.payload), message: {message: "Todo item deleted", type: "success"}}
+            return state = {loading: false, success: false, total:state.total, todos: state.todos.filter(item => item._id !== action.payload), message: {message: "Todo item deleted", type: "success"}}
         case DELETE_TODO_FAIL:
             return {...state, error: action.payload, message: {message: action.payload, type: "error"}}
         case UPLOAD_TODO_SUCCESS:
