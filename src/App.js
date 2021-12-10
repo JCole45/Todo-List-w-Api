@@ -7,11 +7,11 @@ import {TodoContext} from "./Context/todo/todo-context"
 import axios from "axios"
 import {api} from "./api/base"
 
-function App() {
+
+const App = () => {
   
   const {userDetails, getUserDetails} = useContext(UserContext)
   const {todoState, updateTodoState} = useContext(TodoContext)
-
 
   useEffect(() => {
     getUserDetails()
@@ -20,10 +20,14 @@ function App() {
   useEffect( async () => {
     const {user} = userDetails
 
+    console.log(user)
+
     const headerValue = user?.token
     const userId = user?._id
 
     const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+    console.log(authorization, " AUTHORIZATION")
 
     try{
         const config = {
@@ -41,11 +45,11 @@ function App() {
           message: null,
         })
     } catch(err){
-        updateTodoState({
-          total: todoState.total,
-          todos: todoState.todos,
-          message: { message: err.message, type: "error" },
-        })
+        // updateTodoState({
+        //   total: todoState.total,
+        //   todos: todoState.todos,
+        //   message: { message: err.message, type: "error" },
+        // })
     }
   }, [userDetails])
 

@@ -2,21 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import {Provider} from 'react-redux'
-import store from './store'
 import reportWebVitals from './reportWebVitals';
 import {TodoProvider} from "./Context/todo/todo-provider"
 import {UserProvider} from "./Context/user/user-provider"
 
 
 ReactDOM.render(
-  <Provider store={store}>
     <UserProvider>
       <TodoProvider>
         <App />
       </TodoProvider>
-    </UserProvider>
-  </Provider>,
+    </UserProvider>,
   document.getElementById('root')
 );
 

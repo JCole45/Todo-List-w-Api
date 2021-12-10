@@ -27,7 +27,7 @@ const Login = ({button}) => {
         const userId = user?._id
     
         const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
-    
+        console.log(authorization, " AUTHORIZATION")
         try{
             const config = {
                 headers: {
@@ -44,11 +44,11 @@ const Login = ({button}) => {
               message: null,
             })
         } catch(err){
-            updateTodoState({
-              total: todoState.total,
-              todos: todoState.todos,
-              message: { message: err.message, type: "error" },
-            })
+            // updateTodoState({
+            //   total: todoState.total,
+            //   todos: todoState.todos,
+            //   message: { message: err.message, type: "error" },
+            // })
         }
     }
 
