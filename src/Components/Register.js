@@ -1,29 +1,58 @@
-import React, {useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { Form, Input, Button, Typography, Spin } from 'antd';
 import 'antd/dist/antd.css';
+import axios from "axios"
+import {api} from "../api/base"
 import Message from "./Message"
-import {registerUser} from "../Actions/userAction"
-import { useDispatch, useSelector } from 'react-redux'
-import {USER_REGISTER_RESET} from "../Constants/userConstants"
+import { useSelector } from 'react-redux'
+import {UserContext} from "../Context/user/user-context"
 
 const { Title } = Typography;
 
 
 const Register = ({button}) => {
 
-    const dispatch = useDispatch()
+    const {getUserDetails, updateUserDetails, registerUser, userRegisterDetails} = useContext(UserContext)
+
+    const [loading, setLoading] = useState(false)
+    const [success, setSuccess] = useState(false)
+    const [error, setError] = useState(null)
 
     const userRegisterData = useSelector(state => state.userRegister)
-    const {user, success, error, loading} = userRegisterData
+    const {user} = userRegisterData
 
     useEffect(() => {
-        dispatch({
-            type: USER_REGISTER_RESET
-        })
     }, [])
 
-    const onFinish = (values) => {
-        dispatch(registerUser(values))
+    const onFinish = async (values) => {
+        //dispatch(registerUser(values))
+
+        setLoading(true)
+        setSuccess(false)
+
+        try{
+            const config = {
+                'Content-Type': 'application/json',
+            }
+    
+            const body = {
+                name: values.name,
+                email: values.email,
+                password: values.password,
+                confirmPassword: values.confirm_password
+            }
+    
+            const {result, message} = await axios.post(`${api}/api/signup`, body , config)
+            setLoading(false)
+            setSuccess(true)
+
+            registerUser(result)
+        }
+        catch(err){
+            setError(err.message)
+            setLoading(false)
+            setSuccess(false)
+        }
     };
 
     const onFinishFailed = (errorInfo) => {

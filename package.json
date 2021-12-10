@@ -48,6 +48,7 @@
     ]
   },
   "devDependencies": {
-    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5"
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.5",
+    "react-simple-widgets": "^4.2.1"
   }
 }

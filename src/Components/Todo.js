@@ -1,78 +1,250 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useContext} from 'react'
+import axios from "axios"
 import { Table, Space, message as Message, Modal, Spin, Typography } from 'antd';
-import { useDispatch, useSelector } from 'react-redux'
 import { Input,Button } from 'antd';
 import { PlusOutlined, DeleteOutlined, UploadOutlined, UserDeleteOutlined, EyeOutlined, DownloadOutlined} from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import {createTodoItem, uploadTodoItem, deleteTodoItem, editTodoItem, fetchTodo, downloadTodos} from "../Actions/todoActions"
-import {signOutUser} from "../Actions/userAction"
 import Pagination from "./Pagination"
-import {GET_TODO_RESET, CLEAR_MESSAGE, DOWNLOAD_TODO_RESET} from "../Constants/todoConstants"
-
+import {api} from "../api/base"
+import {TodoContext} from "../Context/todo/todo-context"
+import {UserContext} from "../Context/user/user-context"
 const { Paragraph, Title } = Typography;
 
+
 const Todo = () => {
-    const dispatch = useDispatch()
+
+    const {todoState, updateTodoState} = useContext(TodoContext)
+    const { signOut, userDetails } = useContext(UserContext)
+
     const [todoItem, setTodoItem] = React.useState("")
     const [edit, setEdit] = React.useState("")
     const [editId,setEditId] = React.useState("")
     const [screenType, setScreenType] = React.useState("desktop");
 
     useEffect(() => {
+        console.log(todoState)
+    }, [todoState])
+
+    useEffect(() => {
         const handleResize = () => {
-          if (window.innerWidth > 800) {
-            setScreenType("desktop");
-          }
+            if (window.innerWidth > 800) {
+                setScreenType("desktop");
+            } 
     
-          if (window.innerWidth > 550 && window.innerWidth < 800) {
-            setScreenType("tablet");
-          }
-          if (window.innerWidth < 550) {
-            setScreenType("mobile");
-          }
+            if (window.innerWidth > 550 && window.innerWidth < 800) {
+                setScreenType("tablet");
+            }
+            if (window.innerWidth < 550) {
+                setScreenType("mobile");
+            }
         };
+
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => {
-          window.removeEventListener("resize", handleResize);
+            window.removeEventListener("resize", handleResize);
         };
       });
 
-    const handleDelete = (id) => {
-        dispatch(deleteTodoItem(id))
+    const handleFectch = async () => {
+        const {user} = userDetails
+    
+        const headerValue = user?.token
+        const userId = user?._id
+    
+        const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+    
+        try{
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${authorization}`
+                },
+            }
+    
+            const {data} = await axios.get(`${api}/api/todo?page=${1}&pageSize=${10}` , config)
+            let result = data.result
+    
+            updateTodoState({
+              total: result.total,
+              todos: result.todos,
+              message: null,
+            })
+        } catch(err){
+            updateTodoState({
+              total: todoState.total,
+              todos: todoState.todos,
+              message: { message: err.message, type: "error" },
+            })
+        }
     }
 
-    const handleEdit = (text, record) => {
-        dispatch(editTodoItem(text, record))
+    const handleDelete = async (id) => {
+        const {user} = userDetails
+
+        const headerValue = user.token
+        const userId = user._id
+    
+        const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+    
+        try{
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${authorization}`
+                },
+            }
+    
+            const { data } = await axios.delete(`${api}/api/todo/${id}`, config)
+            console.log(data)
+
+            let updateTodo = todoState.todos.filter(todo => todo._id !== id)
+
+            updateTodoState({
+                todos: updateTodo,
+                total: todoState.total,
+                success: todoState.success,
+                message: { message: "Item deleted successfully", type: "success" },
+            })
+    
+        }catch(err){
+            updateTodoState({
+                todos: todoState.todos,
+                total: todoState.total,
+                success: todoState.success,
+                message: { message: "An error occured", type: "error" },
+            })
+        }
+    }
+
+    const handleEdit = async (text, record) => {
+        const {user} = userDetails
+
+        const headerValue = user.token
+        const userId = user._id
+
+        const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+        try{
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${authorization}`
+                },
+            }
+
+            const body = {
+                name: text,
+                content: text,
+                status: record.status
+            }
+
+            const {data} = await axios.put(`${api}/api/todo/${record._id}`, body , config)
+            let result = data.result
+            let message = data.message
+
+            updateTodoState({
+                todos: todoState.todos,
+                total: todoState.total,
+                success: todoState.success,
+                message: { message: "Edit successful", type: "success" },
+            })
+
+            handleFectch()
+
+        }
+        catch(err){
+            updateTodoState({
+                todos: todoState.todos,
+                total: todoState.total,
+                success: todoState.success,
+                message: { message: err.message, type: "error" },
+            })
+        }
+
         setEdit(text)
         setEditId(record._id)
     }
 
-    const handleViewTodo = (id) => {
-        dispatch(fetchTodo(id))
+
+    const handleViewTodo = async (id) => {
+        const {user} = userDetails
+
+        updateTodoState({
+            todos: todoState.todos,
+            todo: null,
+            total: todoState.total,
+            success: todoState.success,
+            message: null,
+            viewLoading:true,
+        })
+
+        const headerValue = user.token
+        const userId = user._id
+
+        const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+        try{
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${authorization}`
+                },
+            }
+
+            const {data} = await axios.get(`${api}/api/todo/${id}` , config)
+            let result = data.result
+            let message = data.message
+
+            updateTodoState({
+                todos: todoState.todos,
+                todo: {...result, message},
+                total: todoState.total,
+                success: todoState.success,
+                message: null,
+                viewLoading:false
+            })
+        }catch(err){
+            updateTodoState({
+                todos: todoState.todos,
+                todo: null,
+                total: todoState.total,
+                success: todoState.success,
+                message: { message: `Something went wrong: ${err.message}`, type: "error" },
+                viewLoading:false
+            })
+        }
     }
 
 
     const handleMessaging = (message) => {
         if(message && message.type === "success")
             Message.success(message.message, ()=> {
-                dispatch({
-                    type: CLEAR_MESSAGE
-                })
+            
+            updateTodoState({
+                todos: todoState.todos,
+                total: todoState.total,
+                message: null,
             })
+        })
+        else{
+            console.log(message)
+        }
 
         if(message && message.type === "error"){
             Message.error(message.message, ()=> {
-                dispatch({
-                    type: CLEAR_MESSAGE
+                updateTodoState({
+                    todos: todoState.todos,
+                    total: todoState.total,
+                    message: null,
                 })
             })
+        }else{
+            console.log(message)
         }
 
         if(message && message.type === "info"){
             Message.info(message.message, ()=> {
-                dispatch({
-                    type: CLEAR_MESSAGE
+                updateTodoState({
+                    todos: todoState.todos,
+                    total: todoState.total,
+                    message: null,
                 })
             })
         }
@@ -108,7 +280,7 @@ const Todo = () => {
                 </Tooltip>
 
                 <Tooltip title="Delete todo item">
-                <DeleteOutlined className="delete-btn" style={{color:"red"}} onClick={()=> handleDelete(record._id)} />
+                    <DeleteOutlined className="delete-btn" style={{color:"red"}} onClick={()=> handleDelete(record._id)} />
                 </Tooltip>
 
             </Space>
@@ -147,28 +319,66 @@ const Todo = () => {
         },
     ];
 
-    const Todos = useSelector(state => state.todo)
-    const {todos, message} = Todos
-
-    const getTodo = useSelector(state => state.getTodo)
-    const {todo, success: getTodoSuccess, error: getTodoError, loading: getTodoLoading} = getTodo
-
-    const downloadTodo = useSelector(state => state.downloadTodo)
-    const {file, success: downloadSuccess, error: downloadError, loading: downloadLoading} = downloadTodo
-
     useEffect(() => {
-       handleMessaging(message)
-    }, [message])
+        console.log("test")
+       handleMessaging(todoState.message)
+    }, [todoState.message])
 
     useEffect (() => {
-        handleTodoDownload(file)
-    }, [downloadSuccess])
+        handleTodoDownload(todoState.file)
+    }, [todoState.file])
 
-    const handleCreateTodo = () => {
+    const handleKeyPress = (e) => {
+        if(e.charCode === 13){
+            handleCreateTodo()
+            setTodoItem("")
+        }
+    }
+
+    const handleCreateTodo = async () => {
         let todo = todoItem.trim()
 
         if(todo.length >= 1){
-            dispatch(createTodoItem(todoItem))
+            const {user} = userDetails
+
+            const headerValue = user.token
+            const userId = user._id
+
+            const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+            try{
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${authorization}`,
+                    },
+                }
+        
+                const body = {
+                    name: todo,
+                    content: todo
+                }
+                const {data} = await axios.post(`${api}/api/todo`, body , config)
+        
+                let message = data.message
+                let result = data.result
+
+                updateTodoState({
+                    total: todoState.total,
+                    todos: [{...result, message}, ...todoState.todos],
+                    message: { message: "created", type: "success" },
+                })
+
+                console.log(todoState)
+                
+            }
+            catch(err){
+                console.log(err)
+                updateTodoState({
+                    total: todoState.total,
+                    todos: todoState.todos,
+                    message: { message: err?.message, type: "error" },
+                })
+            }
             setTodoItem("")
         }
     }
@@ -177,33 +387,98 @@ const Todo = () => {
         document.getElementById("upload-btn").click()
     }
 
-    const handleUpload = (e) => {
+    const handleUpload = async (e) => {
         let file = e.target.files[0]
         const formData = new FormData()
-
         formData.append("file", file)
-        dispatch(uploadTodoItem(formData))        
+        //dispatch(uploadTodoItem(formData))        
+
+        const {user} = userDetails
+
+        const headerValue = user.token
+        const userId = user._id
+
+        const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+        try{
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${authorization}`
+                },
+            }
+
+            const {message} = await axios.post(`${api}/api/todo/upload`, formData , config)
+
+            updateTodoState({
+                total: todoState.total,
+                todos: todoState.todos,
+                message: { message: "File upload successful", type: "success" },
+            })
+
+            //dispatch(fetchTodos({page:1, pageSize:25}))
+
+
+        }catch(err){
+            updateTodoState({
+                total: todoState.total,
+                todos: todoState.todos,
+                message: { message: "An error occured", type: "error" },
+            })
+        }
 
     }
 
-    const handleDownloadTodos = (e) => {
-        dispatch(downloadTodos())
-    }
+    const handleDownloadTodos = async (e) => {
+        //dispatch(downloadTodos())
+        const {user} = userDetails
 
-    const handleKeyPress = (e) => {
-        if(e.charCode === 13){
-            dispatch(createTodoItem(todoItem))
-            setTodoItem("")
+        const headerValue = user.token
+        const userId = user._id
+
+        const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+        try{
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${authorization}`
+                },
+            }
+
+            const file = await axios.post(`${api}/api/todo/download` , {}, config)
+
+            const blobFile = new Blob([file.data], {type:"csv"})
+
+            updateTodoState({
+                total: todoState.total,
+                todos: todoState.todos,
+                message: { message: "Download success", type: "success" },
+                file: blobFile
+            })
+
+        }catch(err){
+            console.log(err)
+            updateTodoState({
+                total: todoState.total,
+                todos: todoState.todos,
+                message: { message: err.message, type: "error" },
+                file: null
+            })
+
         }
     }
 
     const handleSignOut = () => {
-        dispatch(signOutUser())
+        signOut()
     }
 
     const handleClose = () => {
-        dispatch({
-            type: GET_TODO_RESET
+        updateTodoState({
+            todos: todoState.todos,
+            todo: null,
+            total: todoState.total,
+            success: todoState.success,
+            message: null,
         })
     }
 
@@ -216,19 +491,22 @@ const Todo = () => {
             a_tag.download = "myTodos.csv"
             a_tag.click()
 
-            dispatch({
-                type: DOWNLOAD_TODO_RESET
+            updateTodoState({
+                total: todoState.total,
+                todos: todoState.todos,
+                message: { message: "", type: "none" },
+                file: null
             })
         }
     }
 
     return (
         <>
-            <Title level={1}> Todo App </Title>
+            <Title level={1}>  </Title>
 
-            <Modal title={todo.name ? todo.name : "-"} visible={getTodoSuccess || getTodoLoading} onOk={handleClose} onCancel={handleClose}>
-                {todo.name}
-                {getTodoLoading && <Spin size="middle" />}
+            <Modal title={todoState?.todo?.name ? todoState?.todo.name : "-"} visible={todoState?.todo || todoState.viewLoading} onOk={handleClose} onCancel={handleClose}>
+                {todoState?.todo?.name}
+                {todoState.viewLoading && <Spin size="middle" />}
             </Modal> 
 
             <div className="signout-button">
@@ -238,7 +516,6 @@ const Todo = () => {
                     </Button> 
                 </Tooltip>
             </div>
-
 
             <div className="input-holder"> 
                 <Input className="input-field" value={todoItem} onChange={(e) => setTodoItem(e.target.value)} onKeyPress={handleKeyPress} placeholder="Add todo item" /> 
@@ -258,10 +535,13 @@ const Todo = () => {
                 <a href="" hidden download id="download"> </a>
             </div>
 
-            <Table className="table-style" columns={screenType !== "mobile" ? columns : mobileColumns} pagination={false} rowKey={record => record._id} dataSource={todos} />
+            <Table className="table-style" columns={screenType !== "mobile" ? columns : mobileColumns} pagination={false} rowKey={record => record._id} dataSource={todoState.todos} />
             <Pagination/>
         </>
     )
 }
 
 export default Todo
+
+
+// @@  - Structuring the context state to maintain the current components without much change. 

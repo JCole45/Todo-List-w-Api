@@ -1,24 +1,22 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import Login from "./Login"
 import { Button } from 'antd';
 import Register from "./Register"
-import { useSelector } from 'react-redux'
+import {UserContext} from "../Context/user/user-context"
 
 const Authentication = () => {
 
     const [stage, setStage] = useState("login")
 
-
-    const userRegisterData = useSelector(state => state.userRegister)
-    const { success: registerSuccess} = userRegisterData
+    const {userRegisterDetails} = useContext(UserContext)
 
     useEffect(() => {
-        if(registerSuccess){
+        if(userRegisterDetails.success){
             setTimeout(() => {
                 setStage("login")
             }, 2000)
         }
-    }, [registerSuccess])
+    }, [userRegisterDetails])
 
     const toggleStage = () => {
         if(stage === "login"){

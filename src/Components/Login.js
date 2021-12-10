@@ -1,38 +1,100 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { Form, Input, Button, Typography, Spin } from 'antd';
+import axios from "axios"
+import {api} from "../api/base"
 import 'antd/dist/antd.css';
 import Message from "./Message"
-import {loginUser} from "../Actions/userAction"
-import { useDispatch, useSelector } from 'react-redux'
-import {USER_LOGIN_RESET} from "../Constants/userConstants"
-
+import {UserContext} from "../Context/user/user-context"
+import {TodoContext} from "../Context/todo/todo-context"
 
 const { Title } = Typography;
 
 const Login = ({button}) => {
 
-    const userLoginData = useSelector(state=> state.userLogin)
-    const { user, success, error, loading} = userLoginData
+    const {userDetails, getUserDetails, updateUserDetails} = useContext(UserContext)
+    const {todoState, updateTodoState} = useContext(TodoContext)
 
-    const dispatch = useDispatch()
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const [show, setTrue] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
+    const [success, setSuccess] = useState(false)
 
-    const onFinish = (values) => {
-        dispatch(loginUser(values))
-        setTrue(true)
+    const handleFectch = async (user) => {
+        //const {user} = userDetails
+    
+        const headerValue = user?.token
+        const userId = user?._id
+    
+        const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+    
+        try{
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${authorization}`
+                },
+            }
+    
+            const {data} = await axios.get(`${api}/api/todo?page=${1}&pageSize=${10}` , config)
+            let result = data.result
+    
+            updateTodoState({
+              total: result.total,
+              todos: result.todos,
+              message: null,
+            })
+        } catch(err){
+            updateTodoState({
+              total: todoState.total,
+              todos: todoState.todos,
+              message: { message: err.message, type: "error" },
+            })
+        }
+    }
+
+    const onFinish = async (values) => {
+        setLoading(true)
+        setSuccess(false)
+        try{
+            const config = {
+                'Content-Type': 'application/json',
+            }
+    
+            const body = {
+                email: username,
+                password: password
+            }
+    
+            const {data} = await axios.post(`${api}/api/login/`, body , config)
+            let message = data.message
+            let result = data.result
+
+            console.log(data.result)
+
+            setLoading(false)
+            setSuccess(true)
+            updateUserDetails(data.result)
+
+            handleFectch(data.result)
+        
+            localStorage.setItem('userInfo', JSON.stringify({user: result}))
+    
+        }
+        catch(err){
+            console.log(err)
+            setError(err?.message)
+            setLoading(false)
+            setSuccess(false)
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
 
-    useEffect(() => {
-        dispatch({
-            type: USER_LOGIN_RESET
-        })
-    }, [])
+    const handleCheck = () => {
+        console.log(getUserDetails)
+    }
 
     return (
         <section className="login-form" >
@@ -40,9 +102,8 @@ const Login = ({button}) => {
         <Title level={2}> Login </Title>
 
         {error && <Message id="error_message" message={error} type={"error"} />}
-        {success && <Message data-testid="success_message" message={user.message} type={"success"} />}
+        {/* {success && <Message data-testid="success_message" message={user.message} type={"success"} />} */}
         {loading && <Spin size="small"/>}
-        {show && <div data-testid="success" >success</div>}
 
         <Form
             name="basic"
@@ -74,7 +135,7 @@ const Login = ({button}) => {
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                 <Button data-testid="submit-button" type="primary" htmlType="submit">
+                 <Button data-testid="submit-button" onClick={handleCheck} type="primary" htmlType="submit">
                     Submit
                 </Button>
                 {button}

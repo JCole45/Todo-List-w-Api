@@ -1,28 +1,58 @@
-import React, {useEffect} from "react"
+import React, {useEffect, useContext} from "react"
 import './App.css';
 import Todo from "./Components/Todo"
 import Authentcation from "./Components/Authentication"
-import { useDispatch, useSelector } from 'react-redux'
-import {fetchTodos} from "./Actions/todoActions"
+import {UserContext} from "./Context/user/user-context"
+import {TodoContext} from "./Context/todo/todo-context"
+import axios from "axios"
+import {api} from "./api/base"
 
 function App() {
   
-  const dispatch = useDispatch()
+  const {userDetails, getUserDetails} = useContext(UserContext)
+  const {todoState, updateTodoState} = useContext(TodoContext)
 
-  const userLogin = useSelector(state => state.userLogin)
-  const {success} = userLogin
 
   useEffect(() => {
-    dispatch(fetchTodos({page:1, pageSize:30}))
-  }, [success])
+    getUserDetails()
+  }, [])
 
-  const userData = useSelector(state=> state.userLogin)
-  const { user } = userData
+  useEffect( async () => {
+    const {user} = userDetails
+
+    const headerValue = user?.token
+    const userId = user?._id
+
+    const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
+
+    try{
+        const config = {
+            headers: {
+                Authorization: `Bearer ${authorization}`
+            },
+        }
+
+        const {data} = await axios.get(`${api}/api/todo?page=${1}&pageSize=${10}` , config)
+        let result = data.result
+
+        updateTodoState({
+          total: result.total,
+          todos: result.todos,
+          message: null,
+        })
+    } catch(err){
+        updateTodoState({
+          total: todoState.total,
+          todos: todoState.todos,
+          message: { message: err.message, type: "error" },
+        })
+    }
+  }, [userDetails])
 
   return (
     <div className="App">
-      {user?.token && <Todo/>}
-      {!user?.token && <Authentcation/>}
+      {userDetails?.user?.token && <Todo/>}
+      {!userDetails?.user?.token && <Authentcation/>}
     </div>
   );
 }

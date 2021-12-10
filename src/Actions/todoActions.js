@@ -6,8 +6,8 @@ import {api} from "../api/base"
 export const fetchTodos = (details) => async (dispatch, getState) => {
     const {userLogin: {user}} = getState()
 
-    const headerValue = user?.token
-    const userId = user?._id
+    const headerValue = details.token ? details.token : user?.token
+    const userId = details.id ? details.id : user?._id
 
     const authorization = Buffer.from(userId + ' ' + headerValue).toString("base64")
     dispatch({
