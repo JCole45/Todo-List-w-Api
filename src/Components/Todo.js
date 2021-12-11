@@ -147,7 +147,7 @@ const Todo = () => {
                 message: { message: "Edit successful", type: "success" },
             })
 
-            handleFectch()
+            //handleFectch()
 
         }
         catch(err){
@@ -362,14 +362,15 @@ const Todo = () => {
                 let message = data.message
                 let result = data.result
 
-                updateTodoState({
-                    total: todoState.total,
-                    todos: [{...result, message}, ...todoState.todos],
-                    message: { message: "created", type: "success" },
-                })
+                let newObj = {...todoState}
+
+                newObj["todos"] = [{...result, message}, ...newObj.todos]
+                newObj["message"] = { message: "created", type: "success" }
+
+                updateTodoState(newObj)
 
                 console.log(todoState)
-                
+            
             }
             catch(err){
                 console.log(err)

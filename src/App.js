@@ -8,6 +8,8 @@ import axios from "axios"
 import {api} from "./api/base"
 
 
+axios.defaults.baseURL = "https://superpoweredtodo.herokuapp.com"
+
 const App = () => {
   
   const {userDetails, getUserDetails} = useContext(UserContext)
@@ -36,7 +38,7 @@ const App = () => {
             },
         }
 
-        const {data} = await axios.get(`${api}/api/todo?page=${1}&pageSize=${10}` , config)
+        const {data} = await axios.get(`/api/todo?page=${1}&pageSize=${10}` , config)
         let result = data.result
 
         updateTodoState({
